@@ -26,6 +26,7 @@ install:
 # Docker _____________
 up:
 	docker compose --file $(DOCKER_FILE) up -d
+	npm run dev
 
 dw:
 	docker compose --file $(DOCKER_FILE) down
@@ -58,3 +59,6 @@ clr: # Clear all laravel cashes
 	docker exec $(cnn) php artisan cache:clear
 	docker exec $(cnn) php artisan config:clear
 	docker exec $(cnn) php artisan view:clear
+
+run:
+	docker exec $(cnn) php artisan $(cmd)

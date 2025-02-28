@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
       libpng-dev \
       libzip-dev \
       zip unzip \
+      cron \
       git && \
       docker-php-ext-install pdo_pgsql && \
       docker-php-ext-install bcmath && \
@@ -27,7 +28,10 @@ COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-#RUN composer install --no-interaction
 
-CMD php-fpm
+# Cron
+COPY ./_docker/app/crontab /etc/cron.d/laravel-cron
+RUN chmod 0644 /etc/cron.d/laravel-cron && crontab /etc/cron.d/laravel-cron
+
+CMD service cron start && php-fpm
 EXPOSE 9000

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreOrUpdateEntryRequest;
 use App\Models\Entry;
 use App\Models\Enums\EntryStatus;
+use App\Services\EntryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,12 @@ use Illuminate\View\View;
 
 class EntryController extends Controller
 {
+    public function __construct(
+        private readonly EntryService $entryService
+    )
+    {
+    }
+
     public function index(Request $request): View
     {
         $perPage = $request->query('perPage', 10);
@@ -22,27 +29,15 @@ class EntryController extends Controller
 
     public function generate(Request $request): RedirectResponse
     {
-        $data = [];
         $fakeTexts = config('faketexts');
-
-        for ($i = 0; $i < 1000; $i++) {
-            $data[] = [
-                'status' => (rand(0, 1) == 1) ? EntryStatus::Allowed : EntryStatus::Prohibited,
-                'text' => $fakeTexts[rand(0, count($fakeTexts) - 1)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        $tableName = (new Entry)->getTable();
-        DB::table($tableName)->insert($data);
+        $this->entryService->generate(1000, $fakeTexts);
 
         return redirect()->route('entry.index');
     }
 
-    public function clear(Entry $entry): RedirectResponse
+    public function clear(): RedirectResponse
     {
-        Entry::truncate();
+        $this->entryService->clearAll();
 
         return redirect()->route('entry.index');
     }
@@ -64,7 +59,7 @@ class EntryController extends Controller
 
     public function update(Entry $entry, StoreOrUpdateEntryRequest $request): RedirectResponse
     {
-        $entry->update($request->validated());
+        $this->entryService->update($entry, $request->validated());
 
         return redirect()->back();
     }
@@ -72,18 +67,17 @@ class EntryController extends Controller
     public function store(StoreOrUpdateEntryRequest $request): RedirectResponse
     {
         $request->flashOnly(['text', 'status']);
-        Entry::create($request->validated());
+        $this->entryService->store($request->validated());
 
         return redirect()->back()->with('success', __('messages.entry.created'));
     }
 
     public function destroy(Entry $entry): RedirectResponse
     {
-        $id = $entry->id;
-        $entry->delete();
+        $this->entryService->destroy($entry);
 
         return redirect()
             ->route('entry.index')
-            ->with('success', __('messages.entry.deleted', ['id' => $id]));
+            ->with('success', __('messages.entry.deleted', ['id' => $entry->id]));
     }
 }

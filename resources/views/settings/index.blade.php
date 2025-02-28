@@ -16,7 +16,12 @@
         @method('patch')
         <label class="font-bold" for="document-url">Документ Google Sheet URL:</label>
         <br/>
-        <input name="document-url" value="{{ $url }}" id="document-url" class="rounded-md w-3/4"/>
+        <input name="document-url" value="{{ $url }}" id="document-url"
+               class="rounded-md w-3/4"/>
+        <br/>
+        <label class="font-bold" for="document-name">Имя таблицы:</label>
+        <br/>
+        <input name="document-name" value="{{ $documentName }}" id="document-name" class="rounded-md w-3/4"/>
         <br/>
         <button type="submit"
                 class="bg-blue-500 hover:bg-blue-600 rounded-lg text-white p-2 pl-5 pr-5 font-medium mt-4">

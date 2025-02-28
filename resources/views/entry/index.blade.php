@@ -51,7 +51,7 @@
             <form action="{{route('entry.generate')}}" method="post" class="mb-2">
                 @csrf
                 <button class="bg-blue-500 hover:bg-blue-600 rounded-lg text-white p-2 pl-5 pr-5 font-medium"
-                        type="submit">Сгенерировать 1000 записей
+                        type="submit">Генерировать 1000 записей
                 </button>
             </form>
             <form action="{{route('entry.clear')}}" method="post">
