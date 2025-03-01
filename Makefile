@@ -7,7 +7,7 @@ endif
 DOCKER_FILE=docker-compose.yml
 cnn="$(CONTAINER_PREFIX)_app" # Container name
 
-# Setup  _____________
+
 prepare-env:
 	cp -n .env.example .env || true
 	php artisan key:generate
@@ -17,9 +17,11 @@ install:
 	npm i
 	npm run build
 
+
 # Docker _____________
 up:
 	docker compose --file $(DOCKER_FILE) up -d
+	docker exec -it $(cnn) chown -R www-data:www-data /var/www
 
 dw:
 	docker compose --file $(DOCKER_FILE) down
