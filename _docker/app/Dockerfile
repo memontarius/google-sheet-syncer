@@ -16,13 +16,15 @@ RUN apt-get update && apt-get install -y \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+WORKDIR /var/www
+
 # Configure non-root user.
 ARG PUID=1000
 ARG PGID=1000
 RUN groupmod -o -g ${PGID} www-data && \
     usermod -o -u ${PUID} -g www-data www-data
 
-WORKDIR /var/www
+RUN chown -R www-data:www-data /var/www
 
 COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
 

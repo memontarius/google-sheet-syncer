@@ -12,12 +12,6 @@ prepare-env:
 	cp -n .env.example .env || true
 	php artisan key:generate
 
-setup:
-	sudo chown -R $(USER):www-data storage
-	sudo chown -R $(USER):www-data bootstrap/cache
-	sudo chmod 775 -R storage/
-	sudo chmod 775 -R bootstrap/cache/
-
 install:
 	composer install
 	npm i
@@ -26,7 +20,6 @@ install:
 # Docker _____________
 up:
 	docker compose --file $(DOCKER_FILE) up -d
-	npm run dev
 
 dw:
 	docker compose --file $(DOCKER_FILE) down
@@ -43,7 +36,7 @@ bs:
 
 # DB _____________
 mig:
-	docker exec $(cnn) php artisan migrate
+	docker exec $(cnn) php artisan migrate --force
 
 migr:
 	docker exec $(cnn) php artisan migrate:rollback
@@ -59,6 +52,7 @@ clr: # Clear all laravel cashes
 	docker exec $(cnn) php artisan cache:clear
 	docker exec $(cnn) php artisan config:clear
 	docker exec $(cnn) php artisan view:clear
+	docker exec $(cnn) php artisan route:clear
 
 run:
 	docker exec $(cnn) php artisan $(cmd)
